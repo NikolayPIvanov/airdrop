@@ -28,7 +28,7 @@ contract MerkleAirdrop {
         if (claimed[account]) revert MerkleAirdrop__AlreadyClaimed();
 
         // It is standard to hash twice to prevent collisions
-        bytes32 leaf = keccak256(bytes.concat(keccak256(abi.encodePacked(account, amount))));
+        bytes32 leaf = keccak256(bytes.concat(keccak256(abi.encode(account, amount))));
 
         if (!MerkleProof.verify(proof, merkleRoot, leaf)) revert MerkleAirdrop__ProofInvalid();
 
