@@ -24,6 +24,12 @@ contract MerkleAirdrop {
         merkleRoot = _merkleRoot;
     }
 
+    /**
+     * Claim tokens
+     * @param account The address of the claimer which is eligible for airdrop
+     * @param amount The amount of token the claimer can receive
+     * @param proof The merkle proof array which is used to construct and verify the merkle tree
+     */
     function claim(address account, uint256 amount, bytes32[] calldata proof) external {
         if (claimed[account]) revert MerkleAirdrop__AlreadyClaimed();
 
