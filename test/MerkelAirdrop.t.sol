@@ -21,6 +21,7 @@ contract MerkelAirdropTest is ZkSyncChainChecker, Test {
     ];
 
     address public user;
+    address public gasPayer;
     uint256 public userPrivKey;
 
     function setUp() public {
@@ -35,6 +36,12 @@ contract MerkelAirdropTest is ZkSyncChainChecker, Test {
         }
 
         (user, userPrivKey) = makeAddrAndKey("user");
+        gasPayer = makeAddr("gasPayer");
+    }
+
+    function signMessage(uint256 privKey, address account) public view returns (uint8 v, bytes32 r, bytes32 s) {
+        bytes32 hashedMessage = airdrop.getMessageHash(account, AMOUNT);
+        (v, r, s) = vm.sign(privKey, hashedMessage);
     }
 
     function testUsersCanClaim() public {
@@ -42,8 +49,13 @@ contract MerkelAirdropTest is ZkSyncChainChecker, Test {
 
         console.log(user);
 
-        vm.prank(user);
-        airdrop.claim(user, AMOUNT, PROOF);
+        vm.startPrank(user);
+        (uint8 v, bytes32 r, bytes32 s) = signMessage(userPrivKey, user);
+        vm.stopPrank();
+
+        vm.startPrank(gasPayer);
+        airdrop.claim(user, AMOUNT, PROOF, v, r, s);
+        vm.stopPrank();
 
         uint256 endingBalance = token.balanceOf(user);
 
