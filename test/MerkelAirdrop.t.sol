@@ -53,6 +53,10 @@ contract MerkelAirdropTest is ZkSyncChainChecker, Test {
         (uint8 v, bytes32 r, bytes32 s) = signMessage(userPrivKey, user);
         vm.stopPrank();
 
+        console.log("v", v);
+        console.logBytes32(r);
+        console.logBytes32(s);
+
         vm.startPrank(gasPayer);
         airdrop.claim(user, AMOUNT, PROOF, v, r, s);
         vm.stopPrank();
